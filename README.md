@@ -97,8 +97,8 @@ work silently, and keeps a lightweight version history with restore.
 
 ### Prebuilt image (GitHub Container Registry)
 
-A multi-arch (`linux/amd64`, `linux/arm64`) image is built automatically from
-`main` and published to GHCR:
+A `linux/amd64` image is built automatically from `main` and published to GHCR
+(a native build so it is fast and reliable):
 
 ```
 ghcr.io/lucif3r-d3vil/homepage-manager:latest
