@@ -1,0 +1,33 @@
+services:
+  homepage-manager:
+    build: .
+    image: homepage-manager:local
+    container_name: homepage-manager
+    restart: unless-stopped
+    # Expose the web UI (maps the container port to a host port).
+    ports:
+      - "3001:3001"
+    environment:
+      # Optional — only needed if you override the paths below.
+      - PORT=3001
+      - HOST=0.0.0.0
+      # Path *inside the container* where the app keeps settings + history.
+      - HOMEPAGE_MANAGER_DATA_DIR=/app/data
+      # UID/GID the app runs as. Set to match the owner of the Homepage
+      # config directory on your host (run `id -u` and `id -g` to check).
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+    volumes:
+      # Mount your real Homepage configuration directory here. Change the
+      # host path on the left. The container path must stay /homepage-config.
+      # In the app's setup screen enter:  /homepage-config
+      - /host/path/to/homepage:/homepage-config
+      # Persistent app data (settings + file version history).
+      - homepage-manager-data:/app/data
+    # The app itself does not need root; the entrypoint drops privileges to
+    # $PUID/$PGID. (You may additionally pin `user: "${PUID}:${PGID}"`.)
+    tmpfs:
+      - /tmp
+
+volumes:
+  homepage-manager-data:

@@ -1,0 +1,6 @@
+{
+  "name": "@homepage-manager/server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend API + filesystem layer for Homepage Manager."
+}
