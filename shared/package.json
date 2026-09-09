@@ -1,0 +1,7 @@
+{
+  "name": "@homepage-manager/shared",
+  "version": "1.0.0",
+  "private": true,
+  "types": "index.d.ts",
+  "description": "Type-only contract shared between the Homepage Manager server and web client."
+}
