@@ -95,6 +95,25 @@ work silently, and keeps a lightweight version history with restore.
 > `$PUID`/`$PGID` (default `1000`). Make sure the directory you mount is readable
 > and writable by those IDs — the setup screen will tell you if it isn't.
 
+### Prebuilt image (GitHub Container Registry)
+
+A multi-arch (`linux/amd64`, `linux/arm64`) image is built automatically from
+`main` and published to GHCR:
+
+```
+ghcr.io/lucif3r-d3vil/homepage-manager:latest
+```
+
+Version tags (`v1.2.3` → `ghcr.io/lucif3r-d3vil/homepage-manager:1.2.3`) are
+published for tagged releases, and short-sha tags (`sha-<7 chars>`) for every
+push. In `docker-compose.yml` you can swap `build: .` for the published image:
+
+```yaml
+image: ghcr.io/lucif3r-d3vil/homepage-manager:latest
+```
+
+so you don't have to build locally. Keep the two `volumes` mounts the same.
+
 ---
 
 ## Running locally (development)
