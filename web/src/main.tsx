@@ -4,6 +4,8 @@ import { App } from "./App";
 import { AppProvider } from "./store";
 import { registerYaml } from "./monaco/setup";
 import "./styles.css";
+import "./workspace.css";
+import "./product-overrides.css";
 
 // Configure Monaco + register YAML highlighting once, before first editor mount.
 registerYaml();

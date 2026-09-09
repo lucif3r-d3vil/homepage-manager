@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import type {
@@ -163,11 +164,23 @@ export class Manager {
     const rel = relDir ? `${relDir}/${name}` : name;
     const { kind, language, group } = classify(rel);
     let hash = "";
+    let readAllowed = true;
+    let writeAllowed = true;
+    let readError: string | undefined;
+    let writeError: string | undefined;
     try {
+      await fs.access(abs, fsConstants.R_OK);
       const content = await fs.readFile(abs, "utf8");
       hash = this.hashOf(content);
-    } catch {
-      hash = "";
+    } catch (err) {
+      readAllowed = false;
+      readError = err instanceof Error ? err.message : "Read permission denied";
+    }
+    try {
+      await fs.access(abs, fsConstants.W_OK);
+    } catch (err) {
+      writeAllowed = false;
+      writeError = err instanceof Error ? err.message : "Write permission denied";
     }
     return {
       path: rel,
@@ -179,6 +192,10 @@ export class Manager {
       size: stat.size,
       mtime: stat.mtime.toISOString(),
       hash,
+      readAllowed,
+      writeAllowed,
+      readError,
+      writeError,
     };
   }
 
@@ -188,10 +205,7 @@ export class Manager {
     const name = segments[segments.length - 1];
     const relDir = segments.slice(0, -1).join("/");
     if (!isEditableName(name)) {
-      throw new SandboxError(
-        `Files of this type are not editable. Allowed: .yaml, .yml, .css, .js`,
-        "NOT_ALLOWED"
-      );
+      throw new SandboxError(`This file type is not safe to edit.`, "NOT_ALLOWED");
     }
     const real = await resolveReadPath(root, rel);
     const content = await fs.readFile(real, "utf8");

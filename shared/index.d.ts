@@ -5,8 +5,8 @@
  * consumed by both the Node backend and the browser bundle without a build step.
  */
 
-export type HomepageFileKind = "yaml" | "yml" | "css" | "js";
-export type EditorLanguage = "yaml" | "css" | "javascript";
+export type HomepageFileKind = "yaml" | "yml" | "json" | "css" | "js" | "mjs" | "cjs" | "env" | "txt" | "conf" | "toml";
+export type EditorLanguage = "yaml" | "css" | "javascript" | "json" | "dotenv" | "plaintext";
 
 /** A convenience group shown in the sidebar. */
 export type FileGroup =
@@ -39,6 +39,10 @@ export interface HomepageFileMeta {
   mtime: string;
   /** Content hash (sha1) at last read — used for conflict detection. */
   hash: string;
+  readAllowed?: boolean;
+  writeAllowed?: boolean;
+  readError?: string;
+  writeError?: string;
 }
 
 export interface FileContent extends HomepageFileMeta {

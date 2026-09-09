@@ -8,9 +8,8 @@ import { api } from "../api";
 import type { ValidateIssue } from "@shared";
 
 const kindIcon: Record<string, IconName> = {
-  yaml: "yaml",
-  css: "css",
-  js: "js",
+  yaml: "yaml", yml: "yaml", css: "css", js: "js", mjs: "js", cjs: "js",
+  json: "document", env: "document", txt: "document", conf: "document", toml: "document",
 };
 
 export function EditorArea() {

@@ -124,6 +124,9 @@ export function Sidebar() {
                       {doc?.dirty && !doc.conflict && (
                         <span className="file-item__badge is-dirty" title="Unsaved changes" />
                       )}
+                      {f.writeAllowed === false && (
+                        <span className="file-item__permission" title={f.writeError ?? "This file cannot be written by the application."}>Read ✓ · Write ✕</span>
+                      )}
                     </button>
                   );
                 })}
