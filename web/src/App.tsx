@@ -7,6 +7,7 @@ import { Toasts } from "./components/Toasts";
 import { ConflictModal } from "./components/ConflictModal";
 import { HistoryModal } from "./components/HistoryModal";
 import { SetupWizard } from "./screens/SetupWizard";
+import { WorkspaceTools } from "./components/WorkspaceTools";
 
 export function App() {
   const { loading, configured, showSetup, historyOpen } = useApp();
@@ -49,7 +50,7 @@ export function App() {
         <Sidebar />
         <main className="content">
           <DirBanner />
-          <EditorArea />
+          <WorkspaceTools><EditorArea /></WorkspaceTools>
         </main>
       </div>
       {showSetup && configured && (

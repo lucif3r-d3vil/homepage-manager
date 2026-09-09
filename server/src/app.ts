@@ -98,13 +98,12 @@ export function buildApp(dataDir: string, isDev: boolean): AppHandlers {
         });
         return;
       }
-      if (!status.exists || !status.writable) {
-        res.status(503).json({
-          error: status.message ?? "Configuration directory unavailable.",
-          code: "UNAVAILABLE",
-        });
+      if (!status.exists) {
+        res.status(503).json({ error: status.message ?? "Configuration directory unavailable.", code: "UNAVAILABLE" });
         return;
       }
+      // Listing remains available on read-only mounts so every file can report
+      // its own Read/Write capability instead of disappearing from the browser.
       res.json(status.files ?? []);
     } catch (err) {
       handleError(res, err);

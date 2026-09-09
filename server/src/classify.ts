@@ -1,71 +1,34 @@
-import type {
-  EditorLanguage,
-  FileGroup,
-  HomepageFileKind,
-} from "@homepage-manager/shared";
+import type { EditorLanguage, FileGroup, HomepageFileKind } from "@homepage-manager/shared";
 
-const KNOWN: Record<string, { group: FileGroup; label: string }> = {
-  "services.yaml": { group: "Services", label: "Services" },
-  "bookmarks.yaml": { group: "Bookmarks", label: "Bookmarks" },
-  "settings.yaml": { group: "Settings", label: "Settings" },
-  "widgets.yaml": { group: "Widgets", label: "Widgets" },
-  "docker.yaml": { group: "Docker", label: "Docker" },
-  "kubernetes.yaml": { group: "Kubernetes", label: "Kubernetes" },
-  "custom.css": { group: "Custom CSS", label: "Custom CSS" },
-  "custom.js": { group: "Custom JS", label: "Custom JS" },
+const KNOWN: Record<string, { group: FileGroup }> = {
+  "services.yaml": { group: "Services" }, "bookmarks.yaml": { group: "Bookmarks" },
+  "settings.yaml": { group: "Settings" }, "widgets.yaml": { group: "Widgets" },
+  "docker.yaml": { group: "Docker" }, "kubernetes.yaml": { group: "Kubernetes" },
+  "custom.css": { group: "Custom CSS" }, "custom.js": { group: "Custom JS" },
 };
+export interface FileSpec { kind: HomepageFileKind; language: EditorLanguage; group: FileGroup; }
+export function extensionOf(name: string): string { const i = name.lastIndexOf("."); return i < 0 ? "" : name.slice(i + 1).toLowerCase(); }
 
-export interface FileSpec {
-  kind: HomepageFileKind;
-  language: EditorLanguage;
-  group: FileGroup;
-}
-
-export function extensionOf(name: string): string {
-  const idx = name.lastIndexOf(".");
-  return idx < 0 ? "" : name.slice(idx + 1).toLowerCase();
-}
-
-const KINDS = new Set<HomepageFileKind>(["yaml", "yml", "css", "js"]);
-
-/** Only these file extensions may be read/edited through the API. */
+// Homepage also uses .env and JSON in addition to its core YAML/CSS/JS files.
+// Keep this deliberately extension based so new, safe text configuration files are visible.
+const SAFE_TEXT = new Set(["yaml", "yml", "json", "css", "js", "mjs", "cjs", "env", "txt", "conf", "toml"]);
 export function isEditableName(name: string): boolean {
-  return KINDS.has(extensionOf(name) as HomepageFileKind);
+  const ext = extensionOf(name);
+  return name === ".env" || SAFE_TEXT.has(ext);
 }
-
 export function languageFor(ext: string): EditorLanguage {
   const e = ext.toLowerCase();
   if (e === "css") return "css";
-  if (e === "js" || e === "javascript") return "javascript";
-  return "yaml"; // .yaml and .yml
+  if (["js", "mjs", "cjs"].includes(e)) return "javascript";
+  if (e === "json") return "json";
+  if (e === "env") return "dotenv";
+  if (["txt", "conf", "toml", ""].includes(e)) return "plaintext";
+  return "yaml";
 }
-
-export function isYamlExt(ext: string): boolean {
-  const e = ext.toLowerCase();
-  return e === "yaml" || e === "yml";
-}
-
 export function classify(rel: string): FileSpec {
   const name = rel.split("/").pop() ?? rel;
   const ext = extensionOf(name);
-  const kind = (ext as HomepageFileKind) || "yaml";
-  const known = KNOWN[rel];
-  const group: FileGroup = known ? known.group : "Other";
-  return {
-    kind,
-    language: languageFor(ext),
-    group,
-  };
+  const kind = (ext || (name === ".env" ? "env" : "txt")) as HomepageFileKind;
+  return { kind, language: languageFor(ext), group: KNOWN[rel]?.group ?? "Other" };
 }
-
-export const ALL_GROUPS: FileGroup[] = [
-  "Services",
-  "Bookmarks",
-  "Settings",
-  "Widgets",
-  "Docker",
-  "Kubernetes",
-  "Custom CSS",
-  "Custom JS",
-  "Other",
-];
+export const ALL_GROUPS: FileGroup[] = ["Services", "Bookmarks", "Settings", "Widgets", "Docker", "Kubernetes", "Custom CSS", "Custom JS", "Other"];
